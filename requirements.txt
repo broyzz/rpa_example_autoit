@@ -1,0 +1,2 @@
+# Dependência para interagir com objetos COM do Windows (AutoItX3)
+pywin32
