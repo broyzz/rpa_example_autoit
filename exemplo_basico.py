@@ -1,8 +1,10 @@
 """
 Exemplo básico de uso do AutoIt via DLL com pywin32
 """
+
 import win32com.client
 import time
+
 
 def exemplo_basico():
     """
@@ -46,9 +48,9 @@ def exemplo_basico():
     checksum = obter_checksum_janela("Calculadora", 230, 120, 300, 155)
 
     if num_calc == checksum:
-        print('Calculo Efetuado com sucesso')
-    else: 
-        print('Erro no calculo')
+        print("Calculo Efetuado com sucesso")
+    else:
+        print("Erro no calculo")
 
     # --- Fechamento da Calculadora ---
     autoit.Tooltip(" === FECHANDO CALCULADORA === ", 1, 1)
@@ -56,7 +58,7 @@ def exemplo_basico():
     autoit.Tooltip("", 0, 0)  # Limpa o tooltip
 
 
-def obter_checksum_janela(titulo: str, x1: int, y1: int, x2: int, y2: int):    
+def obter_checksum_janela(titulo: str, x1: int, y1: int, x2: int, y2: int):
     """Ativa uma janela e obtém o checksum de uma área específica RELATIVA a ela.
 
     Para obter o checksum relativo à janela, a função primeiro encontra a posição
@@ -73,10 +75,12 @@ def obter_checksum_janela(titulo: str, x1: int, y1: int, x2: int, y2: int):
         float | None: O valor do checksum ou None se a janela não for encontrada.
     """
     autoit = win32com.client.Dispatch("AutoItX3.Control")
-    
-    if autoit.WinExists(titulo):        # Obtém as dimensões da tela e da janela para calcular o centro
-        screen_width = 1920
-        screen_height = 1080
+
+    if autoit.WinExists(
+        titulo
+    ):  # Obtém as dimensões da tela e da janela para calcular o centro
+        screen_width = autoit.DesktopWidth
+        screen_height = autoit.DesktopHeight
         win_width = autoit.WinGetPosWidth(titulo)
         win_height = autoit.WinGetPosHeight(titulo)
 
@@ -91,11 +95,11 @@ def obter_checksum_janela(titulo: str, x1: int, y1: int, x2: int, y2: int):
         autoit.WinSetState(titulo, "", 9)
         autoit.WinActivate(titulo)
         autoit.WinWaitActive(titulo, "", 5)  # Aguarda até 5s pela ativação
-        
+
         # Obtém a posição atual da janela no monitor (absoluta)
         win_x = autoit.WinGetPosX(titulo)
         win_y = autoit.WinGetPosY(titulo)
-        
+
         # Ajusta as coordenadas locais para coordenadas globais (do monitor)
         # somando a posição inicial da janela
         time.sleep(0.2)
@@ -104,7 +108,7 @@ def obter_checksum_janela(titulo: str, x1: int, y1: int, x2: int, y2: int):
         abs_y1 = win_y + y1
         abs_x2 = win_x + x2
         abs_y2 = win_y + y2
-        
+
         # Calcula o checksum da área especificada nas coordenadas absolutas
         checksum = autoit.PixelChecksum(abs_x1, abs_y1, abs_x2, abs_y2)
         print(f"Checksum da área relativa na janela '{titulo}': {checksum}")
@@ -112,7 +116,7 @@ def obter_checksum_janela(titulo: str, x1: int, y1: int, x2: int, y2: int):
     else:
         print(f"Janela '{titulo}' não encontrada.")
         return None
-    
+
 
 if __name__ == "__main__":
     exemplo_basico()
