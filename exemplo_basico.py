@@ -26,19 +26,24 @@ def exemplo_basico():
 
     # --- Realização do Cálculo ---
     autoit.Tooltip(" === REALIZANDO CALCULO === ", 1, 1)
-    autoit.Send("123")
     time.sleep(0.5)  # Pausa para garantir processamento da interface
+
+    autoit.Send("123")
+    time.sleep(0.5)
+
     autoit.Send("{+}")
     time.sleep(0.5)
+
     autoit.Send("123")
     time.sleep(0.5)
+
     autoit.Send("=")
 
     # --- Validação do Resultado ---
     autoit.Tooltip(" === VALIDANDO CALCULO === ", 1, 1)
     # Checksum esperado para o resultado (pode variar conforme resolução/tema do Windows)
-    num_calc = 284645482.0
-    checksum = obter_checksum_janela("Calculadora", 270, 92, 307, 121)
+    num_calc = 3754204085.0
+    checksum = obter_checksum_janela("Calculadora", 230, 120, 300, 155)
 
     if num_calc == checksum:
         print('Calculo Efetuado com sucesso')
@@ -69,7 +74,19 @@ def obter_checksum_janela(titulo: str, x1: int, y1: int, x2: int, y2: int):
     """
     autoit = win32com.client.Dispatch("AutoItX3.Control")
     
-    if autoit.WinExists(titulo):
+    if autoit.WinExists(titulo):        # Obtém as dimensões da tela e da janela para calcular o centro
+        screen_width = 1920
+        screen_height = 1080
+        win_width = autoit.WinGetPosWidth(titulo)
+        win_height = autoit.WinGetPosHeight(titulo)
+
+        # Calcula a posição central
+        pos_x = int((screen_width - win_width) / 2)
+        pos_y = int((screen_height - win_height) / 2)
+
+        # Move a janela para a posição central fixa
+        autoit.WinMove(titulo, "", pos_x, pos_y)
+
         # Restaura a janela (SW_RESTORE = 9) caso esteja minimizada e a ativa
         autoit.WinSetState(titulo, "", 9)
         autoit.WinActivate(titulo)
@@ -81,6 +98,8 @@ def obter_checksum_janela(titulo: str, x1: int, y1: int, x2: int, y2: int):
         
         # Ajusta as coordenadas locais para coordenadas globais (do monitor)
         # somando a posição inicial da janela
+        time.sleep(0.2)
+
         abs_x1 = win_x + x1
         abs_y1 = win_y + y1
         abs_x2 = win_x + x2
